@@ -1,7 +1,9 @@
 package com.br.cardvalidator.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,20 +19,6 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class CustomResponseEntityExceptionHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception ex) {
-        // Construa uma mensagem de erro personalizada com base na exceção ou em qualquer outro critério
-        String errorMessage = "Ocorreu um erro durante o processamento da requisição.";
-
-        // Crie um objeto de resposta de erro adequado, por exemplo, ErrorResponse
-        ErrorResponse errorResponse = new ErrorResponse(errorMessage);
-
-        // Retorne a resposta de erro com status apropriado, por exemplo, 500 Internal Server Error
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
@@ -41,10 +29,22 @@ public class CustomResponseEntityExceptionHandler {
             String errorField = fieldError.getCode();
 
             errors.add(errorMessage);
+            errors.add(errorField);
 
         });
-
         return ResponseEntity.badRequest().body(errors);
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        if (ex.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException e = (InvalidFormatException) ex.getCause();
+            if (e.getTargetType().isEnum()) {
+                String fieldName = e.getPath().get(0).getFieldName();
+                String errorMessage = "O valor fornecido para o campo '" + fieldName + "' é inválido";
+                return ResponseEntity.badRequest().body(errorMessage);
+            }
+        }
+        return ResponseEntity.badRequest().build();
     }
 }
 

@@ -1,6 +1,6 @@
 package com.br.cardvalidator.model;
 
-import com.br.cardvalidator.enumerador.CreditorDebit;
+import com.br.cardvalidator.enumerador.TypeCard;
 
 import javax.persistence.*;
 
@@ -12,7 +12,7 @@ public class Card {
     private String numero;
     private String nomeTitular;
     @Enumerated(EnumType.STRING)
-    private CreditorDebit creditorDebit ;
+    private TypeCard typeCard;
     private String dataValidade;
     private int codigoSeguranca;
 
@@ -23,9 +23,9 @@ public class Card {
 
     }
 
-    public Card(String nomeTitular, String numeroCartao, CreditorDebit creditorDebit) {
+    public Card(String nomeTitular, String numeroCartao, TypeCard typeCard) {
         this.nomeTitular = nomeTitular;
-        this.creditorDebit = creditorDebit;
+        this.typeCard = typeCard;
         this.numero = numeroCartao;
     }
 
@@ -38,8 +38,8 @@ public class Card {
         return nomeTitular;
     }
 
-    public CreditorDebit getCreditorDebit() {
-        return creditorDebit;
+    public TypeCard getCreditorDebit() {
+        return typeCard;
     }
 
     public String getDataValidade() {
