@@ -17,14 +17,18 @@ public class Card {
     private int codigoSeguranca;
 
 
-    public Card(String numeroCartao, CreditorDebit creditorDebit) {
-        this.creditorDebit = creditorDebit;
-        this.numero = numeroCartao;
-    }
+
     @Deprecated
     public Card() {
 
     }
+
+    public Card(String nomeTitular, String numeroCartao, CreditorDebit creditorDebit) {
+        this.nomeTitular = nomeTitular;
+        this.creditorDebit = creditorDebit;
+        this.numero = numeroCartao;
+    }
+
 
     public String getNumero() {
         return numero;
