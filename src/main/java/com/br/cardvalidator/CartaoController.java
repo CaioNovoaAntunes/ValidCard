@@ -2,6 +2,7 @@ package com.br.cardvalidator;
 
 import com.br.cardvalidator.dto.CardRequest;
 import com.br.cardvalidator.exception.CartaoInvalidoException;
+import com.br.cardvalidator.exception.ValidationUtils;
 import com.br.cardvalidator.model.Card;
 import com.br.cardvalidator.repository.CartaoRepository;
 import com.br.cardvalidator.service.CartaoService;
@@ -34,14 +35,10 @@ public class CartaoController {
     @PostMapping("/cartoes")
     public ResponseEntity<?> salvarCartao(@Valid @RequestBody CardRequest cartao, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.toList());
+            List<String> errors = ValidationUtils.getErrorsMessage(bindingResult);
             return ResponseEntity.badRequest().body(errors);
         }
         Card card = cartao.toModel();
-
             cartaoRepository.save(card);
             return ResponseEntity.status(HttpStatus.CREATED).body("Cartão salvo com sucesso");
     }
